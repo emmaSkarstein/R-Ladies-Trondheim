@@ -5,12 +5,17 @@ author: "Emma Skarstein"
 date: "Spring 2024"
 output:
   xaringan::moon_reader:
-    css: ["xaringan-themer.css", "my_theme.css"]
+    css: ["xaringan-themer.css"]
     nature:
       highlightStyle: solarized-dark
       highlightLines: true
       countIncrementalSlides: false
 ---
+
+```{r, echo = FALSE, eval = TRUE}
+pagedown::chrome_print("24_04_23_slides.html",
+                       output="24_04_23_slides.pdf")
+```
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE, dpi = 300, warning = FALSE, message = FALSE)
@@ -382,12 +387,6 @@ You can see some more examples of `ggplot2` plots with the `palmerpenguin` data 
 
 ---
 
-class: center, middle
-
-Slides created via the R package [`xaringan`](https://github.com/yihui/xaringan), all code is available [on GitHub](https://github.com/emmaSkarstein/R-Ladies-Trondheim).
-
----
-
 class: inverse, center, middle
 
 # Plotting flowers
@@ -417,6 +416,4 @@ class: inverse, center, middle
 class: center, middle
 
 Slides created via the R package [`xaringan`](https://github.com/yihui/xaringan), all code is available on GitHub: https://github.com/emmaSkarstein/R-Ladies-Trondheim 
-
----
 
