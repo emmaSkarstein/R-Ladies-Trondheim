@@ -23,8 +23,8 @@ gg <- ggplot() +
   ylim(-1, 1) +
   geom_text(aes_(x=0, y=0.15), label="R",
             color=dark_purple, family="courier", size=150) +
-  geom_image(aes(x=-0.014, y=0.4, image="lykkeporten.png"), size = 1) +
-  geom_image(aes(x=0, y=-0.88, image="rose.png"), size = 0.2) +
+  geom_image(aes(x=-0.014, y=0.4, image="hex_sticker/lykkeporten.png"), size = 1) +
+  geom_image(aes(x=0, y=-0.88, image="hex_sticker/rose.png"), size = 0.2) +
   geom_text(aes(x=0, y=-0.26), label="ladies",
             color=dark_purple, family="courier", size=30) +
   geom_text(aes(x=0, y=-0.5), label="trondheim",
@@ -41,7 +41,7 @@ sticker(subplot = gg,
         # Hexagon
         h_fill = "white", h_color = dark_purple,
         dpi = 800,
-        filename="hex_trondheim.png")
+        filename="hex_sticker/hex_trondheim.png")
 
 
 
