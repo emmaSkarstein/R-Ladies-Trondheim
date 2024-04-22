@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Introduction to ggplot2 and plotting flowers</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Emma Skarstein" />
+    <script src="24_04_23_slides_files/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="my_theme.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Introduction to <code>ggplot2</code> and plotting flowers
+]
+.subtitle[
+## R Ladies Trondheim startup meeting
+]
+.author[
+### Emma Skarstein
+]
+.date[
+### Spring 2024
+]
+
+---
+
+
+
+
+
+
+# Goal for today
+
+Thank you for coming! &lt;3 Please help yourself to tea/coffee and cookies.
+
+--
+
+.pull-left[
+- What is R-Ladies Trondheim?
+
+- Introduction to the package `ggplot2`
+
+- Brief example of how to plot flowers in `ggplot2`
+
+- Future of R Ladies Trondheim
+
+- Talk at the tables: Who are you and why are you here?
+
+- Cookies and mingling
+]
+
+.pull-right[
+&lt;img src="figs/hex_trondheim.png" width="300px" /&gt;
+]
+
+
+
+---
+
+# Who am I?
+
+- Doing a PhD in statistics at the Department of mathematical sciences at NTNU
+
+- Finished in September: feel sad about leaving the university, and maybe starting a job where I can't use R :'( 
+
+- Hope that R Ladies Trondheim can encourage connections between academia and industry, and across different departments at the university.
+
+
+---
+class: inverse, center, middle
+
+# Get Started with `ggplot2`
+
+---
+# Why `ggplot2`?
+
+- It gives you a recognizable system - when you have understood the structure of `ggplot2` it is very easy to understand how to modify things to get exactly the plot you want. 
+- When you have learned how to tweak the layout it is really easy to create your own style.
+
+Example: [(here is a tutorial)](https://r-graph-gallery.com/web-lollipop-plot-with-r-mario-kart-64-world-records.html)
+
+&lt;img src="figs/mario_kart.png" width="60%" /&gt;
+
+---
+# The components of ggplot2
+
+|                 |                                    |
+| --------------- | ---------------------------------- |
+| `ggplot(data)`  | The **data** that you want to build your graphic on. |
+| `aes()`         | **Aesthetic mappings** between your data and visual properties of your graphic. |
+| `geom_*()`      | The **geometric shapes** representing the data. |
+
+
+
+```r
+ggplot(data, aes(x = ..., y = ..., color = ...)) +
+  geom_*()
+```
+
+
+
+---
+# First steps
+
+Install the `ggplot2` package:
+
+
+```r
+install.packages("ggplot2")
+```
+
+Load the package:
+
+
+```r
+library(ggplot2)
+```
+
+For this tutorial, I'll use the `palmerpenguins` dataset, which you can install and load in the same way:
+
+
+```r
+install.packages("palmerpenguins")
+```
+
+```r
+library(palmerpenguins)
+```
+
+---
+# A simple plot
+
+Let's first take a look at the structure of our data.
+
+
+```r
+head(penguins)
+```
+
+```
+## # A tibble: 6 × 8
+##   species island    bill_length_mm bill_depth_mm flipper_length_mm body_mass_g
+##   &lt;fct&gt;   &lt;fct&gt;              &lt;dbl&gt;         &lt;dbl&gt;             &lt;int&gt;       &lt;int&gt;
+## 1 Adelie  Torgersen           39.1          18.7               181        3750
+## 2 Adelie  Torgersen           39.5          17.4               186        3800
+## 3 Adelie  Torgersen           40.3          18                 195        3250
+## 4 Adelie  Torgersen           NA            NA                  NA          NA
+## 5 Adelie  Torgersen           36.7          19.3               193        3450
+## 6 Adelie  Torgersen           39.3          20.6               190        3650
+## # ℹ 2 more variables: sex &lt;fct&gt;, year &lt;int&gt;
+```
+
+
+
+```r
+names(penguins)
+```
+
+```
+## [1] "species"           "island"            "bill_length_mm"   
+## [4] "bill_depth_mm"     "flipper_length_mm" "body_mass_g"      
+## [7] "sex"               "year"
+```
+
+---
+# A simple plot
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g))
+```
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-11-1.png" width="90%" /&gt;
+]
+.pull-right[
+Let's say we want to plot the flipper length against body mass. We use the `ggplot()` function, and specify the data set, and what we want on the x- and y-axis. If we run this, we see the initialized plot.
+]
+
+---
+# A simple plot - Adding points
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+* geom_point()
+```
+
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-13-1.png" width="90%" /&gt;
+]
+
+.pull-right[
+To get the actual data on the plot, we need to specify `geom_point()`. The layers of a `ggplot` are added together with a **`+`**. 
+]
+
+---
+# A simple plot - Color by species
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+* geom_point(aes(color = species))
+```
+
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-15-1.png" width="90%" /&gt;
+]
+
+.pull-right[
+To color the points by species, add `aes(color = species)` inside `geom_point()`. 
+]
+
+---
+# A simple plot - Themes
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species)) +
+* theme_bw()
+```
+
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-17-1.png" width="90%" /&gt;
+]
+
+.pull-right[
+We can make changes to the layout of the plot by specifying a different theme. The default is `theme_gray()`, let's change it to `theme_bw()`. 
+]
+
+---
+# A simple plot - Color palettes
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species)) +
+* scale_color_manual(values = c("orange", "darkcyan", "hotpink")) +
+  theme_bw() 
+```
+
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-19-1.png" width="90%" /&gt;
+]
+
+.pull-right[
+The color palette can be changed through `scale_color_...()`. In this case, we want to specify manual values for the colors, but you could also use ready-made color palettes, [there are lots of them!](https://emilhvitfeldt.github.io/r-color-palettes/discrete.html)
+]
+
+---
+# A simple plot - Theme options
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species)) +
+  scale_color_manual(values = c("orange", "darkcyan", "hotpink")) +
+  theme_bw() +
+* theme(legend.position = "top")
+```
+
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-21-1.png" width="90%" /&gt;
+]
+
+.pull-right[
+In the `theme()` function you can change stuff like background color, font, text sizes and colors, and much more, basically anything that has to do with the layout. There we move the legend to be on the top.
+]
+
+---
+# A simple plot - Axis and legend titles
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species)) +
+  scale_color_manual(values = c("orange", "darkcyan", "hotpink")) +
+* labs(color = "Species",
+*      x = "Flipper length (mm)", y = "Body mass (g)") +
+  theme_bw() +
+  theme(legend.position = "top")
+```
+
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-23-1.png" width="60%" /&gt;
+]
+
+.pull-right[
+We can change the axis and legend titles by using `labs()`. The reason we specify `color = "Species"` is that we want the legend for color to have this title. `labs()` is also where you can add a title, subtitle and caption.
+]
+
+---
+
+# A simple plot - Fonts
+
+
+
+
+```r
+library(showtext)
+showtext_auto()
+font_add_google(name = "Josefin Sans", family = "Josefin Sans")
+```
+
+The package `showtext` is great for changing fonts. You can change the font to any font from [Google Fonts](https://fonts.google.com/).
+
+---
+
+# A simple plot - Fonts
+
+
+```r
+ggplot(data = penguins, 
+       aes(x = flipper_length_mm, y = body_mass_g)) +
+  geom_point(aes(color = species)) +
+  scale_color_manual(values = c("orange", "darkcyan", "hotpink")) +
+  labs(color = "Species", 
+       x = "Flipper length (mm)", y = "Body mass (g)") + 
+  theme_bw() +
+  theme(legend.position = "top",
+*       text = element_text(family = "Josefin Sans"))
+```
+
+.pull-left[
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-27-1.png" width="60%" /&gt;
+]
+
+.pull-right[
+I used Josefin Sans here to make the change obvious. A nice go-to font is Open Sans.
+]
+
+---
+# Final penguin figure
+
+&lt;img src="24_04_23_slides_files/figure-html/unnamed-chunk-28-1.png" width="60%" /&gt;
+
+---
+# More penguin plots
+
+You can see some more examples of `ggplot2` plots with the `palmerpenguin` data [here](https://allisonhorst.github.io/palmerpenguins/articles/examples.html).
+
+![](figs/penguins_vignette.png)
+---
+# **ggplot2** resources
+
+- [The R graph gallery](https://r-graph-gallery.com/): different graphs in base R and ggplot2, many examples and tutorials.
+
+- [ggplot2 cheatsheet](https://raw.githubusercontent.com/rstudio/cheatsheets/main/data-visualization.pdf)
+
+- Tutorial by Cédric Scherer, ["Graphic design with ggplot2"](https://www.cedricscherer.com/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/) 
+  - .small[A really great reference, goes into _great_ detail of all the options of ggplot2]
+
+
+---
+
+class: center, middle
+
+Slides created via the R package [`xaringan`](https://github.com/yihui/xaringan), all code is available [on GitHub](https://github.com/emmaSkarstein/R-Ladies-Trondheim).
+
+---
+
+class: inverse, center, middle
+
+# Plotting flowers
+
+---
+
+class: inverse, center, middle
+
+# Next steps for R Ladies Trondheim
+
+---
+
+# Next steps for R Ladies Trondheim
+
+- What kind of meetings are useful? Workshops, talks, co-working, just chatting?
+- Potential talks/workshops:
+  - CV in RMarkdown
+  - Making slides using Xaringan
+  - Using R in data journalism
+  - Writing academic articles using Quarto
+  - Making your own website in R
+  - Creating R packages
+  - Reproducible research reports using RMarkdown
+
+---
+
+class: center, middle
+
+Slides created via the R package [`xaringan`](https://github.com/yihui/xaringan), all code is available on GitHub: https://github.com/emmaSkarstein/R-Ladies-Trondheim 
+
+---
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "solarized-dark",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
