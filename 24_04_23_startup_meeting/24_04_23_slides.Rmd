@@ -12,7 +12,7 @@ output:
       countIncrementalSlides: false
 ---
 
-```{r, echo = FALSE, eval = TRUE}
+```{r, echo = FALSE, eval = FALSE}
 pagedown::chrome_print("24_04_23_slides.html",
                        output="24_04_23_slides.pdf")
 ```
