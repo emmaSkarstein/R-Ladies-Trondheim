@@ -1,4 +1,4 @@
-# R Ladies Trodheim
+# R Ladies Trondheim
 
 For information about events and meetings, see our [Meetup page](https://www.meetup.com/rladies-trondheim/).
 
