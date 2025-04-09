@@ -6,7 +6,11 @@ April 9, 2025
 * googlesheets4 and googledrive - Brooke Wolford
 * ggplot2 and RMarkdown - Elisa Moreno
 
-Minutes:
+### Minutes:
+
+11 attendees 
+
+Suggestion to also consider [Quarto](https://quarto.org/docs/computations/r.html)
 
 Ideas for future events:
 - Hackathon (maybe good for Tekna collaboration)
