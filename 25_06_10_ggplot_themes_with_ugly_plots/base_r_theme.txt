@@ -1,0 +1,18 @@
+# Made by Bert van der Veen
+  ... +
+  theme_classic(base_size = 12) +  # Classic theme with Arial font
+  theme(
+    plot.title = element_text(hjust = 0.5),  # Center and bold title with Arial
+    axis.title.x = element_text(margin = margin(t = 10)),  # Add margin to axis titles with Arial
+    axis.title.y = element_text(margin = margin(r = 10)),
+    axis.text = element_text(size = 10),  # Set axis text size with Arial
+    panel.background = element_rect(fill = "white", color = NA),  # Set panel background to white
+    plot.background = element_rect(fill = "white", color = NA),  # Set plot background to white
+    strip.background = element_rect(fill = "white", color = NA),  # Set facet background to white
+    plot.margin = unit(c(1, 1, 1, 1), "lines"),  # Adjust plot margins
+    panel.spacing = unit(0.3, "lines"),  # Adjust spacing between facets
+    panel.border = element_rect(fill = NA, linewidth = 0.3),  # Add border around each facet
+    panel.grid.minor = element_line(linewidth = 0.2), panel.grid.major = element_line(linewidth = 0.2),
+    axis.line = element_line(linewidth = 0.3, color = "grey"),
+        axis.ticks = element_line(linewidth = 0.3)
+  )
