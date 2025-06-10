@@ -6,3 +6,4 @@ R graph gallery: https://r-graph-gallery.com/
 
 GGplot2 themes cheatsheet by Clara Granell: https://github.com/claragranell/ggplot2/blob/main/ggplot_theme_system_cheatsheet.pdf
 
+[Cool example of dataviz in R](https://www.linkedin.com/posts/cararthompson_dataviz-activity-7335327768529833985-WXZO?utm_medium=ios_app&rcm=ACoAAA33nPgBZ5zGzq7A4fPzyyURvF06EuZfhrc&utm_source=social_share_send&utm_campaign=copy_link)
