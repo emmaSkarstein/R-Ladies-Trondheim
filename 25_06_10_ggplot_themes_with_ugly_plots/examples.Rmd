@@ -1,0 +1,81 @@
+---
+title: "R-ladies Workshop 6 June 2025"
+author: "Brooke Wolford"
+date: "2025-06-11"
+output: html_document
+---
+
+```{r}
+
+library(tidyverse) # Includes ggplot2 and dplyr, which we will use here!
+
+# Loading and examining the data -----------------------------------------------
+# Load the data from an URL
+longbeach <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-03-04/longbeach.csv')
+
+library(ggplot2)
+
+```
+
+
+### plot by Brooke Wolford
+```{r}
+
+#color palette
+library(devtools)
+install_github("johannesbjork/LaCroixColoR")
+library(LaCroixColoR)
+
+#cool font
+library(showtext)
+# Add Helvetica Neue Light (must be installed on your system)
+font_add(family = "helvetica_neue_light", regular = "/System/Library/Fonts/HelveticaNeue.ttc")
+#font_add_google(name = "Lato", family = "lato") 
+
+showtext_auto()
+
+#make continuous into 10 for the discrete scale
+colors<-lacroix_palette("Pamplemousse", n = length(unique(longbeach$animal_type)), type = "continuous")
+pal<-colors[1:10]
+
+# A basic bar plot of animal types
+ggplot(longbeach) +
+  geom_bar(aes(x = animal_type,fill=animal_type)) + 
+  #scale_fill_manual(values=pal,name="Animaal",labels=c("test","test1")) +
+  scale_fill_manual(values=pal,name="Animal") +
+  theme_bw(base_family = "helvetica_neue_light") +
+  theme(axis.text.x=element_text(angle=45,hjust=1),legend.position="none") + 
+  labs(title="Longbeach Animal Rescue",x="Animal")
+```
+
+### plot by Ragnheiður “Heather” Torfadóttir 
+```{r}
+library(tidyverse) 
+
+# A basic bar plot of animal types
+ggplot(longbeach,
+       mapping = aes(fill = was_outcome_alive,)) +
+  scale_fill_manual(values = c("purple", "pink"), name = "Alive") +
+  geom_bar(aes(x = animal_type)) +
+  theme(
+    plot.background = element_rect(fill = "yellow"),
+    panel.background = element_rect(fill = 'lightblue', colour = 'brown', size = 4),
+    
+    
+    strip.background = element_rect(fill = "green"),
+    
+    strip.text.y = element_text(color = "white"),
+    
+    plot.title = element_text(colour = "blue", family = "serif", face = "italic"),
+    
+    
+  ) + 
+  labs(title = "Cutest animals",
+     subtitle = "test subtitle",
+     x = "my x axis",
+     y = "my y axis",
+     caption = "this is a caption",
+     col = "Alive") 
+
+
+```
