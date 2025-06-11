@@ -11,3 +11,5 @@ GGplot2 themes cheatsheet by Clara Granell: https://github.com/claragranell/ggpl
 Colors
 * https://r-charts.com/colors/  
 * https://r-graph-gallery.com/38-rcolorbrewers-palettes.html  
+
+Check out the [examples](examples.Rmd) we made today! 
