@@ -1,7 +1,7 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # R-Ladies Trondheim: Traffic data workshop
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Code by Emma Skarstein, with assi
+# Code by Emma Skarstein, with assistance by Snorre Hansen
 
 library(httr) # ghql
 library(jsonlite)
@@ -14,7 +14,7 @@ bicycles_at_moholt <- bike_data
 weather_at_moholt <- weather_daily
 bicycles_in_trondheim <- bike_data_all_stations
 
-# ~~~~~~~~~~~~~~~~~~~~bike_data_all_stations# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Exploratory plots with ggplot2 ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
