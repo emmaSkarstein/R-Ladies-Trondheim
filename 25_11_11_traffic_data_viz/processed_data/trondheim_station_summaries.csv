@@ -1,0 +1,67 @@
+X,id,name,lat,lon,municipality,direction_from,direction_to,avg_daily,summer_avg,winter_avg,weekday_avg,weekend_avg,peak_month,n_days,popup_text
+1,95507B2418805,Rotvollekra - sykkel,63.431397,10.480342,Trondheim,Lade,Ranheim,441,582,227,551,164,September,366,"<b>Rotvollekra - sykkel</b><br/>
+      <b>Daily average:</b> 441 bicycles<br/>
+      <br/>
+      <b>Seasonal averages:</b><br/>
+      Summer: 582 | Winter: 227<br/>
+      <br/>
+      <b>Weekday vs weekend averages:</b><br/>
+      Weekdays: 551 | Weekends: 164<br/>
+      <br/>
+      <b>Peak month:</b> September<br/>
+      <small>(366 days of data)</small>"
+3,03908B2426198,Svingbrua - sykkel,63.432745,10.38202,Trondheim,Ila,Bratt<U+00F8>ra,653,901,328,779,337,September,366,"<b>Svingbrua - sykkel</b><br/>
+      <b>Daily average:</b> 653 bicycles<br/>
+      <br/>
+      <b>Seasonal averages:</b><br/>
+      Summer: 901 | Winter: 328<br/>
+      <br/>
+      <b>Weekday vs weekend averages:</b><br/>
+      Weekdays: 779 | Weekends: 337<br/>
+      <br/>
+      <b>Peak month:</b> September<br/>
+      <small>(366 days of data)</small>"
+8,52632B1993994,Moholt ved skiundergangen,63.41118,10.444825,Trondheim,Moholt,Vegamot,585,704,269,719,247,September,366,"<b>Moholt ved skiundergangen</b><br/>
+      <b>Daily average:</b> 585 bicycles<br/>
+      <br/>
+      <b>Seasonal averages:</b><br/>
+      Summer: 704 | Winter: 269<br/>
+      <br/>
+      <b>Weekday vs weekend averages:</b><br/>
+      Weekdays: 719 | Weekends: 247<br/>
+      <br/>
+      <b>Peak month:</b> September<br/>
+      <small>(366 days of data)</small>"
+9,10272B1698646,Gamle Okstadbakken - sykkel,63.384333,10.376885,Trondheim,Heimdal,Trondheim,292,370,161,375,83,September,366,"<b>Gamle Okstadbakken - sykkel</b><br/>
+      <b>Daily average:</b> 292 bicycles<br/>
+      <br/>
+      <b>Seasonal averages:</b><br/>
+      Summer: 370 | Winter: 161<br/>
+      <br/>
+      <b>Weekday vs weekend averages:</b><br/>
+      Weekdays: 375 | Weekends: 83<br/>
+      <br/>
+      <b>Peak month:</b> September<br/>
+      <small>(366 days of data)</small>"
+10,82732B2353931,Stavne - sykkeltavle,63.413493,10.383358,Trondheim,Kroppan,Marienborg,720,822,416,909,241,September,366,"<b>Stavne - sykkeltavle</b><br/>
+      <b>Daily average:</b> 720 bicycles<br/>
+      <br/>
+      <b>Seasonal averages:</b><br/>
+      Summer: 822 | Winter: 416<br/>
+      <br/>
+      <b>Weekday vs weekend averages:</b><br/>
+      Weekdays: 909 | Weekends: 241<br/>
+      <br/>
+      <b>Peak month:</b> September<br/>
+      <small>(366 days of data)</small>"
+11,10737B1969119,Tempeveien,63.402965,10.395449,Trondheim,Tempe,Sluppen,557,721,337,714,157,September,366,"<b>Tempeveien</b><br/>
+      <b>Daily average:</b> 557 bicycles<br/>
+      <br/>
+      <b>Seasonal averages:</b><br/>
+      Summer: 721 | Winter: 337<br/>
+      <br/>
+      <b>Weekday vs weekend averages:</b><br/>
+      Weekdays: 714 | Weekends: 157<br/>
+      <br/>
+      <b>Peak month:</b> September<br/>
+      <small>(366 days of data)</small>"
