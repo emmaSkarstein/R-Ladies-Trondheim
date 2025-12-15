@@ -1,5 +1,5 @@
 ---
-title: "Module 3"
+title: "tidymodels for R-Ladies Trondheim"
 author: "Brooke Wolford"
 date: "2025-12-08"
 output: html_document
