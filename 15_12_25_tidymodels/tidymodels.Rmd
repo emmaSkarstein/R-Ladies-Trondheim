@@ -1,0 +1,531 @@
+---
+title: "Module 3"
+author: "Brooke Wolford"
+date: "2025-12-08"
+output: html_document
+---
+
+### License
+This work is licensed under a Creative Commons Attribution 4.0 International License (CC BY 4.0). To view a copy of this license, visit: https://creativecommons.org/licenses/by/4.0/
+
+### Sources
+Content for this Module is derived from
+* https://rebeccabarter.com/blog/2020-03-25_machine_learning
+* https://education.rstudio.com/blog/2020/02/conf20-intro-ml/
+* https://www.r-bloggers.com/2020/05/using-xgboost-with-tidymodels/#google_vignette
+* https://rpubs.com/leoohyama/tidymodelstitanic
+* https://www.tidymodels.org/start/
+
+ChatGPT was used in the creation of examples and explanations.
+
+### Objectives 
+By the end of the session, participants will be able to:
+	* Understand key concepts in AI & machine learning.
+	* Perform data preprocessing for ML tasks.
+	* Train and evaluate basic models using caret, tidymodels, randomForest, and xgboost.
+	* Interpret key model evaluation metrics.
+
+### Setup	
+
+We aren't reading any data in or writing out, so we will skip setting the global root directory this time.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Background
+
+AI versus Machine Learning
+
+Machine learning is a subset of AI. "Artificial intelligence refers to the general ability of computers to emulate human thought and perform tasks in real-world environments, while machine learning refers to the technologies and algorithms that enable systems to identify patterns, make decisions, and improve themselves through experience and data." Deep learning is a type of machine learning using neural networks. You can read more:
+
+* https://ai.engineering.columbia.edu/ai-vs-machine-learning/
+* https://professionalprograms.mit.edu/blog/technology/machine-learning-vs-artificial-intelligence/
+* https://www.ibm.com/think/topics/ai-vs-machine-learning-vs-deep-learning-vs-neural-networks
+
+### Machine learning in R
+
+The original package for machine learning in R is `caret`: Caret stands for Classification And Regression Training. More recently, `tidymodels` was to developed to use the grammar of the tidyverse as a collection of modelling packages. `caret` is more widely used while `tidymodels` offers a modern, modular approach. 
+
+Just as tidyverse has libraries within it such as dplyr and tidyr, tidymodels has libraries within it too. The key ones are:
+
+rsample:sample splitting (e.g. train/test or cross-validation)
+
+recipes:pre-processing
+
+parsnip: specifying the model
+
+yardstick: evaluating the model
+
+```{r}
+
+library(tidymodels)
+library(dplyr)
+library(readr)
+library(tidyr)
+library(randomForest)
+library(ranger)
+library(xgboost)
+library(janitor)
+library(skimr)
+library(workflows)
+library(tune)
+library(mlbench)
+library(vip)
+
+#if you get an error with vip, try to re-install
+#note you need quotations when using install.packages() but not when using library()
+#install.packages("vip")
+
+```
+
+### Exploratory Data Analysis and Pre-processing
+
+The first step is an exploratory data analysis—-plots and summaries of the data to understand the variables and their distributions. However, we have done that in previous modules. 
+
+We will use the Pima Indian Women’s diabetes dataset which contains information on 768 Pima Indian women’s diabetes status, as well as many predictive features. This is built into the `mlbench` library.
+
+```{r}
+#load data from the mlbench package
+data("PimaIndiansDiabetes")
+
+#reassigning to df for easier typing
+df <- PimaIndiansDiabetes
+
+#if you had any issues with mlbench, you can load the dataspace as before and use dataset called pima
+
+#let's look at the data
+glimpse(df)
+str(df)
+summary(df)
+
+#histogram of insulin values
+ggplot(df) +
+  geom_histogram(aes(x = insulin))
+
+#what do you think about the overabundance of values of 0?
+#it turns out that the NA values are coded as 0 in this dataset
+
+#lets convert 0 to NA for the relevant columns
+df_clean <- df %>%
+  mutate_at(vars(triceps, glucose, pressure, insulin, mass), 
+            function(.var) { 
+              if_else(condition = (.var == 0), # if true (i.e. the entry is 0)
+                      true = as.numeric(NA),  # replace the value with NA
+                      false = .var # otherwise leave it as it is
+                      )
+            })
+
+```
+
+### data split 
+Training data is used for the model training and hyperparameter tuning. Once trained, the model can be evaluated against test data to assess accuracy.
+
+This split can be done automatically using the inital_split() function (from rsample) which creates a special “split” object.
+
+It is important to set a random seed beore using a function that uses randomness (e.g. shuffling data, sampling, or simulations). This allows you to get the exact same sequence of random numbers each time and makes your code testable. You can read about setting the seed [here](https://r-coder.com/set-seed-r/).
+
+```{r}
+
+set.seed(1234) #set a seed so we have a reproducible split
+
+# split the data into training (75%) and testing (25%)
+df_split <- initial_split(df_clean, prop = 0.75)
+df_split
+
+# extract training and testing sets
+df_train <- training(df_split)
+df_test <- testing(df_split)
+
+# create cross validation object from training data
+df_cv <- vfold_cv(df_train)
+
+#how many folds does this make by default?
+?vfold_cv
+
+```
+
+### Define a recipe
+
+Creating a recipe has two parts which we layer with pipes: 
+
+1. Specify the formula (`recipe()`): specify the outcome variable and predictor variables
+
+2. Specify pre-processing steps: define the pre-processing steps, such as imputation of missing data, creating dummy variables, scaling, etc.
+
+Note we use the “role selections” as arguments to the pre-processing steps. They specify that we want to apply the step to “all numeric” variables or “all predictor variables”.
+
+```{r}
+
+# define the recipe
+my_recipe <- 
+  # which consists of the formula (outcome ~ predictors)
+  recipe(diabetes ~ pregnant + glucose + pressure + triceps + 
+           insulin + mass + pedigree + age, 
+         data = df_clean) %>%
+  # and some pre-processing steps
+  step_normalize(all_numeric()) %>%
+  step_impute_knn(all_predictors())
+
+?recipes::selections
+
+#look at how many predictor variables we’ve specified and the steps we’ve specified 
+summary(my_recipe)
+my_recipe
+
+# preprocessing
+df_train_preprocessed <- my_recipe %>%
+  # apply the recipe to the training data
+  prep(df_train) %>%
+  # extract the pre-processed training dataset
+  juice()
+df_train_preprocessed
+
+```
+
+Note that we used the original df_clean data object rather than the df_train object or the df_split object. We could have used any of these. At this point recipes only takes the names and roles of the outcome and predictor variable from the data object. We will apply this recipe to specific datasets later.
+
+### Specify model with parsnip
+
+`parsnip` offers a unified interface for the massive variety of models that exist in R. This means that you only have to learn one way of specifying a model, and you can use this specification and have it generate a linear model, a random forest model, a support vector machine model, and more with a single line of code.
+
+For model specification you need:
+
+1. The model type: what kind of model you want to fit, set using a different function depending on the model, such as `rand_forest()` for random forest, `logistic_reg()` for logistic regression, `svm_poly()` for a polynomial SVM model etc. The full list of models available via parsnip can be found [here](https://tidymodels.github.io/parsnip/articles/articles/Models.html).
+
+2. The arguments: the model parameter values set using `set_args()`.
+
+3. The engine: the underlying package the model should come from (e.g. “ranger” for the fast C++ implementation of Random Forest or `randomForest` for the original R implementation), set using `set_engine()`.
+
+4. The mode: the type of prediction - since several packages can do both classification (binary/categorical prediction) and regression (continuous prediction), set using `set_mode()`.
+
+A random forest is a machine learning algorithm that uses an ensemble of decision trees to make predictions. It works by training multiple decision trees on different subsets of the data and then combining their outputs to arrive at a final prediction. This ensemble approach generally leads to higher accuracy and better generalization compared to using a single decision tree. 
+
+For random forest, we can tune hyperparameters like mtry, the number of randomly selected predictors to consider at each split, or trees, the number of trees in the forest.
+
+```{r}
+
+#random forest from ranger
+
+rf_model <- 
+  # specify that the model is a random forest
+  rand_forest() %>%
+  # specify that the `mtry` parameter needs to be tuned
+  set_args(mtry = tune()) %>%
+  # select the engine/package that underlies the model
+  set_engine("ranger", importance = "impurity") %>%
+  # choose either the continuous regression or binary classification mode
+  set_mode("classification") 
+
+#Note: If you want to be able to examine the variable importance of your final model later, you will need to set importance argument when setting the engine. For ranger, the importance options are "impurity" or "permutation".
+
+# logistic regression from glm model
+
+lr_model <- 
+  # specify that the model is logistic regression
+  logistic_reg() %>%
+  # select the engine/package that underlies the model
+  set_engine("glm") %>%
+  # choose either the continuous regression or binary classification mode
+  set_mode("classification") 
+
+
+```
+
+
+### Workflow
+
+Note, it is only when we tune the parameters or fit the model that the recipe and model frameworks are actually implemented.
+
+```{r}
+
+# Initiate a workflow, add recipe and model to it
+rf_workflow <- workflow() %>%
+  add_recipe(my_recipe) %>%
+  add_model(rf_model)
+
+```
+
+### Hyperparameter tuning
+
+We will perform tuning on the cross-validation object. We will specify the range of mtry values and then we add a tuning layer to the workflow using `tune_grid()` from the `tune` package. We will consider two metrics from the `yardstick` package—accurary and area under the receiver operator curve.
+
+We will explore the results with `collect_metrics()`.
+
+```{r}
+
+# specify which values to try
+rf_grid <- expand.grid(mtry = c(3, 4, 5))
+# extract results
+rf_tune_results <- rf_workflow %>%
+  tune_grid(resamples = df_cv, #CV object
+            grid = rf_grid, # grid of values to try
+            metrics = metric_set(accuracy, roc_auc)
+            )
+
+# print results
+rf_tune_results %>%
+  collect_metrics()
+
+```
+
+Now let's also tune the trees hyperparameter at the same time as mtry.
+
+```{r}
+#first we edit the model
+rf_model <- 
+  # specify that the model is a random forest
+  rand_forest() %>%
+  # specify that the `mtry` and `trees` parameter needs to be tuned
+  set_args(mtry = tune(),trees=tune()) %>%
+  # select the engine/package that underlies the model
+  set_engine("ranger", importance = "impurity") %>%
+  # choose either the continuous regression or binary classification mode
+  set_mode("classification") 
+
+#call the workflow again
+rf_workflow <- workflow() %>%
+  add_recipe(my_recipe) %>%
+  add_model(rf_model)
+
+#now we add trees to the grid
+rf_grid <- expand.grid(mtry = c(3, 4, 5), trees = c(100, 500,1000))
+# extract results
+rf_tune_results2 <- rf_workflow %>%
+  tune_grid(resamples = df_cv, #CV object
+            grid = rf_grid, # grid of values to try
+            metrics = metric_set(accuracy, roc_auc)
+            )
+
+# print results
+rf_tune_results2 %>%
+  collect_metrics()
+
+# Let's find the maximum AUROC and accuracy
+rf_tune_results2 %>%
+  collect_metrics() %>% group_by(.metric) %>% summarize(max(mean))
+
+# which parameters do those correspond to?
+ rf_tune_results2 %>%
+  collect_metrics() %>% group_by(.metric) %>% slice_max(mean, n = 1)
+ 
+ # Select best by AUROC
+best_auroc <- select_best(rf_tune_results2, metric = "roc_auc")
+best_auroc
+
+# Select best by accuracy
+best_acc <- select_best(rf_tune_results2, metric = "accuracy")
+best_acc
+
+```
+
+As you can see, the best AUROC and best accuracy give us different hyperparameters. What to do?
+
+Pick the metric that actually matters for your problem
+	*	Accuracy is best if false positives and false negatives cost roughly the same and your classes are balanced.
+	*	AUROC is better if you care about ranking cases correctly (e.g., risk scores) or you have class imbalance. It evaluates how well the model separates the classes regardless of a specific threshold.
+	*	If you’re in biomedical research, AUROC is often more appropriate than accuracy, because outcomes like disease presence are usually imbalanced, and you care about discrimination rather than just the raw percent correct.
+
+Ideally we would report both metrics but select based on our primary metric of interest. If accuracy and AUROC pull you toward wildly different parameter sets, it may be worth checking why — sometimes it’s due to overfitting to noise in one metric.
+
+```{r}
+
+# We want to add a layer to our workflow that corresponds to the tuned parameter, i.e. sets mtry to be the value that yielded the best results. If you didn’t tune any parameters, you can skip this step.
+param_final <- rf_tune_results2 %>%
+  select_best(metric = "roc_auc")
+param_final
+
+# Finalize workflow with best AUROC params
+rf_workflow <- rf_workflow %>%
+  finalize_workflow(param_final)
+
+```
+
+
+### Fit the model
+
+Now we’ve defined the recipe, model, and tuned the model’s parameters. Since all of this information is in the workflow object, we will apply the `last_fit()` function to our workflow and our train/test split object. This will automatically train the model specified by the workflow using the training data, and produce evaluations based on the test set.
+
+Note that the fit object is a data-frame-like object--a tibble with list columns.
+
+You can also extract the test set predictions themselves using the `collect_predictions()` function. Note that there are 192 rows in the predictions object, which corresponds to the number of rows in the test set.
+
+```{r}
+
+rf_fit <- rf_workflow %>%
+  # fit on the training set and evaluate on test set
+  last_fit(df_split)
+
+rf_fit
+
+# Extract performance of final model on the test set
+test_performance <- rf_fit %>% collect_metrics()
+test_performance
+
+# Generate predictions from the test set
+test_predictions <- rf_fit %>% collect_predictions()
+test_predictions
+nrow(test_predictions)
+nrow(df_test)
+
+# Generate a confusion matrix
+test_predictions %>% 
+  conf_mat(truth = diabetes, estimate = .pred_class)
+
+# Plot distributions of the predicted probability distributions for each class
+
+test_predictions %>%
+  ggplot() +
+  geom_density(aes(x = .pred_pos, fill = diabetes), 
+               alpha = 0.5) +
+  scale_fill_manual(values=c("goldenrod3","darkblue")) + 
+  theme_bw()
+
+```
+
+### Predicting with our final model
+
+Now that we have our final model, we want to train it on your full dataset and then use it to predict the response for new data.
+
+The object from fit contains a few things including the ranger object trained with the parameters established through the workflow based on the joined test/train data (which is in the original clean data frame).
+
+```{r}
+final_model <- fit(rf_workflow, df_clean)
+
+final_model
+
+# Let's predict risk of disease for a new patient
+
+new_woman <- tribble(~pregnant, ~glucose, ~pressure, ~triceps, ~insulin, ~mass, ~pedigree, ~age,
+                     2, 95, 70, 31, 102, 28.2, 0.67, 47)
+new_woman
+
+predict(final_model, new_data = new_woman)
+
+```
+
+### Evaluating Variable Importance
+
+```{r}
+
+# Extract the underlying ranger model
+rf_fit_object <- extract_fit_parsnip(final_model)$fit
+
+# Get variable importance
+var_imp <- ranger::importance(rf_fit_object)
+
+# Print sorted importance
+sort(var_imp, decreasing = TRUE)
+
+#let's plot the variable importance
+
+#get the results in a data frame for plotting
+var_imp_df <- ranger::importance(rf_fit_object) %>%
+  as.data.frame() %>%
+  rownames_to_column(var = "variable") %>%
+  rename(importance = 2) %>%
+  arrange(desc(importance))
+
+# point plot
+ggplot(var_imp_df, aes(x = reorder(variable, importance), y = importance)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Variable Importance from Random Forest",
+    x = "Predictor",
+    y = "Importance"
+  ) +
+  theme_minimal()
+
+```
+
+
+### Challenge:
+
+The goal is to use what we have learned with `tidymodels`, `workflow`, and `tune` and run xgboost and glm. Note, XGBoost is robust against highly skewed and/or correlated data, so the amount of preprocessing required is minimal. It is another type of supervised machine learning algorithm.
+
+```{r}
+
+
+# Model specification with tuneable parameters
+xgb_spec <- boost_tree(
+  trees = tune(),
+  tree_depth = tune(),
+  learn_rate = tune(),
+  loss_reduction = tune(),
+  sample_size = tune(),
+  mtry = tune()
+) %>%
+  set_mode("classification") %>%
+  set_engine("xgboost")
+
+# Preprocessing recipe
+xgb_recipe <- recipe(diabetes ~ pregnant + glucose + pressure + triceps + 
+           insulin + mass + pedigree + age, 
+         data = df_clean) %>%
+  step_dummy(all_nominal_predictors()) %>%   # one-hot encode if needed
+  step_zv(all_predictors())                  # remove zero variance cols
+
+# Workflow
+xgb_wf <- workflow() %>%
+  add_model(xgb_spec) %>%
+  add_recipe(xgb_recipe)
+
+# Grid of parameters
+xgb_grid <- grid_latin_hypercube(
+  trees(range = c(100, 1000)),
+  tree_depth(range = c(1, 10)),
+  learn_rate(range = c(0.001, 0.3)),
+  loss_reduction(range = c(0, 5)),   # gamma
+  sample_size = sample_prop(),       # subsample
+  mtry(range = c(1, ncol(df_train) - 1)),
+  size = 20
+)
+
+# Metrics
+multi_metrics <- metric_set(accuracy, roc_auc)
+
+# Tune model
+xgb_tune <- tune_grid(
+  xgb_wf,
+  resamples = df_cv,
+  grid = xgb_grid,
+  metrics = multi_metrics
+)
+
+# View results
+xgb_tune %>% collect_metrics()
+
+# Select best by AUROC
+best_auc <- select_best(xgb_tune, metric = "roc_auc")
+best_auc
+
+# Finalize workflow with best AUROC params
+final_xgb <- finalize_workflow(xgb_wf, best_auc)
+
+# Fit on full training set
+final_fit <- fit(final_xgb, data = df_train)
+
+# Evaluate on test set
+df_test %>%
+  predict(final_fit, ., type = "prob") %>%
+  bind_cols(df_test) %>%
+  roc_auc(truth = diabetes,.pred_neg)  # AUROC
+
+df_test %>%
+  predict(final_fit, ., type = "class") %>%
+  bind_cols(df_test) %>%
+  accuracy(truth = diabetes, estimate = .pred_class)  # Accuracy
+
+test_results <- predict(final_fit, df_test, type = "prob") %>%
+  bind_cols(df_test %>% select(diabetes))  # event level
+
+# Calculate ROC curve data
+roc_data <- roc_curve(test_results, truth = diabetes, .pred_neg)
+
+# Plot ROC curve
+autoplot(roc_data) +  
+  ggtitle("ROC Curve for Diabetes Model") +
+  theme_minimal()
+
+```
