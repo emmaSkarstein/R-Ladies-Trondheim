@@ -5,6 +5,17 @@
 # Run this script once before working with the app.
 #################################################################################
 
+# Required packages
+# install.packages("stringr")
+# install.packages("RCurl")
+# install.packages("data.table")
+# install.packages("jsonlite")
+# install.packages("tidyr")
+# install.packages("lubridate")
+# install.packages("readr")
+# install.packages("zoo")
+# install.packages("dplyr")
+
 # Function to retrieve data from the WISEdb
 get_data <- function(url, accept) {
   full_url <- URLencode(url)
@@ -27,6 +38,8 @@ get_data <- function(url, accept) {
   }
   return(df)
 }
+
+library(dplyr)
 
 # Configure API for reading data
 api <- "https://wisedb.ethz.ch/api/"

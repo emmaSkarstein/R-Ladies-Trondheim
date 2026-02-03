@@ -19,7 +19,7 @@ R language is translated into the language(s) of the web (JavaScript, CSS, HTML)
 
 Can have R data processing in the background
 
-Classic R plotting aesthetics - but interactive!
+Classic R plotting aesthetics - but interactive, so users can explore data for themselves!
 
 ## Some inspiration
 
@@ -97,12 +97,15 @@ server <- function(input, output) {
 
 ## Building blocks
 
-- Inputs
+![](resources/inputs.png)
 
-- Outputs
+## Building blocks (cont.)
 
-- Reactive elements
+![](resources/outputs.png)
 
+## Building blocks (cont.)
+
+![](resources/messages.png)
 
 ## Exploring wastewater
 
@@ -122,7 +125,7 @@ Download example app ``exploring-wastewater/app.R`` from [GitHub](https://github
 
 - Add a [date range selector](https://shiny.posit.co/r/components/inputs/date-range-selector/) for the graph
 
-- Create a [card](https://pkgs.rstudio.com/bslib/articles/cards/) in the viruses page for each different target in the data set (for a more advanced challenge try and do this with a function to avoid lots of copy-pasting)
+- Create a [card](https://pkgs.rstudio.com/bslib/articles/cards/) in the viruses page for each different target in the data set (advanced challenge do this with a function)
 
 - Add another [navigation panel](https://pkgs.rstudio.com/bslib/reference/nav-items.html) "Locations" to compare all viruses for a particular wastewater treatment plant
 
@@ -131,6 +134,8 @@ Download example app ``exploring-wastewater/app.R`` from [GitHub](https://github
 - Make a plot interactive using [``ggplotly``](https://www.statology.org/how-to-use-ggplot2-with-plotly-in-r-for-interactive-visualizations/)
 
 - [Change the colour](https://rstudio.github.io/bslib/articles/utility-classes/index.html#add-background-color) of the header of a card
+
+- Add a [notification](https://shiny.posit.co/r/components/display-messages/notifications/) when the wwtp is changed
 
 
 ## More advanced things

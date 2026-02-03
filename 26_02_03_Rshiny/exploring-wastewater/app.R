@@ -1,3 +1,10 @@
+# install required libraries if not already done so
+# install.packages("shiny")
+# install.packages("dplyr")
+# install.packages("bslib")
+# install.packages("bsicons")
+# install.packages("ggplot2")
+
 # add required libraries here
 library(shiny)
 library(dplyr)
