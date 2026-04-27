@@ -1,0 +1,137 @@
+---
+title: "Quarto demo report"
+author: "Emma Skarstein"
+subtitle: "An interesting subtitle"
+date: "Spring 2026"
+language: 
+  title-block-published: "Date"
+execute: 
+  warning: false
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    self-contained: true
+---
+
+## What is Quarto?
+
+This is an example of a Quarto report. Quarto is *"an open source technical publishing system for creating beautiful articles, websites, blogs, books, slides, and more"*. 
+
+I have used it for
+
+- Supporting information for academic articles
+  - All the code for my statistical analysis is run in the Quarto file
+  - I also made a website containing all the supporting information for an article, very easy with Quarto
+- Presentation slides (for my PhD thesis defense!)
+- For quick reports to show results to colleagues
+- CV (actually I used Rmarkdown but I could have used Quarto!)
+
+
+## Quarto vs Rmarkdown
+
+- Quarto is language-agnostic, Rmarkdown is only for R
+- Quarto is easier to make websites and books in without additional packages
+
+
+## Editing modes
+
+When viewing this .qmd file in RStudio, try switching between "Source" and "Visual" editing mode. You can use whichever mode you prefer! If you have used Latex or Rmarkdown you may prefer source mode, but if you are more familiar with Word then visual mode may be more comfortable.
+
+
+## YAML
+This is the stuff at the very top of your document. 
+
+```
+---
+title: My Document
+author: Emma
+---
+```
+
+Things that can be specified here:
+
+- Standard info like title, subtitle, author(s), date, etc.
+- Other document properties like table of contents (toc), document theme, etc.
+- Execution options for code blocks (what should code and output from code look like)
+
+More information about things you can put in the YAML [here](https://quarto-tdg.org/yaml).
+
+
+## Code
+
+Lifesaver: Shortcut for creating code chunk is
+
+ - Windows/Linux: Ctrl+Alt+I
+ - macOS: Command+Option+I
+
+```{r}
+#| include: false
+library(tidyverse)
+library(palmerpenguins)
+```
+```{r}
+data(penguins)
+str(penguins)
+```
+
+```{r}
+theme_set(theme_minimal())
+
+ggplot(penguins, aes(x = as.factor(year), y = body_mass_g)) +
+  geom_boxplot() +
+  facet_wrap(~species)
+```
+
+
+```{r}
+#| fig-cap: "A plot with a caption!"
+ggplot(penguins, aes(x = body_mass_g, y = flipper_length_mm, color = species)) +
+  geom_point()
+```
+
+## Execution options
+In each code chunk you can add execution options, that indicate how the code itself and the output from the code is shown in the report.You can also specify global execution options in the YAML, these will apply to all code chunks where nothing else has been specified. [Here](https://quarto.org/docs/computations/execution-options.html) you can read more about the execution options. I most commonly use `echo: FALSE` for not showing the code in the report or `eval: FALSE` for not executing a given chunk, and often `warning: FALSE` to hide warning messages.
+
+
+## Math equations
+Use dollar signs for math equations! Single dollar for inline equation, double for an equation on a separate line.
+
+$$
+y = \alpha x + \varepsilon
+$$
+
+## Automatic tables
+
+If we have some data that we want to present, we can easily turn that into a table with quarto. There are many packages that can be used to make more fancy tables, for instance the package [gt](https://gt.rstudio.com/). Generally, I will use the package "kable" for PDF tables and simple HTML-tables, and "gt" for HTML-tables with more fancy features, but it depends on what you are doing!
+
+Here is a kable table:
+
+```{r}
+kableExtra::kable(head(penguins), booktabs = TRUE)
+```
+
+And here is a gt table: 
+```{r}
+gt::gt(head(penguins))
+```
+
+In this case, we are just displaying the actual data in the table. But imagine how useful this can be if you have one or more models that you run in your report, and then you can generate the model comparison table automatically! That way, if you make any changes in the code for the model or data cleaning, the table is automatically updated next time you render the report.
+
+## A note on sharing HTML reports
+When you have a HTML report with some figures and stuff rendered with Quarto, you will notice that a folder gets generated alongside the report, called "[file name]_files". If you send someone the HTML-file without this folder, then the report will not display correctly for them, they may not see images and sometimes the formatting may be wrong too. To avoid this issue, you can add `self-contained: true` to the YAML, like I have done in this document:
+
+```
+format: 
+  html:
+    toc: true
+    toc-depth: 3
+    self-contained: true
+
+```
+
+
+## Resources
+
+- [Quarto cheatsheet](https://rstudio.github.io/cheatsheets/quarto.pdf)
+
