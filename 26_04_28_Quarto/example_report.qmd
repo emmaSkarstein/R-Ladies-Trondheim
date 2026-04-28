@@ -2,16 +2,16 @@
 title: "Quarto demo report"
 author: "Emma Skarstein"
 subtitle: "An interesting subtitle"
-date: "Spring 2026"
+date: "2026"
 language: 
   title-block-published: "Date"
 execute: 
   warning: false
+toc: true
 format: 
-  html:
-    toc: true
-    toc-depth: 3
+  html: 
     self-contained: true
+  pdf: default
 ---
 
 ## What is Quarto?
@@ -130,8 +130,11 @@ format:
 
 ```
 
+## File path
+When rendering the Quarto document, the file path is by default the location of the .qmd file. This means that if you are reading in any data, you need to specify the file path in relation to the location of the .qmd file.
 
 ## Resources
 
 - [Quarto cheatsheet](https://rstudio.github.io/cheatsheets/quarto.pdf)
+- [Journal articles in Quarto](https://quarto.org/docs/journals/)
 
